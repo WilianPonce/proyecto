@@ -1,6 +1,7 @@
 const router = require("express").Router();
 
 const MongoService = require("../services/crudMongo");
+const path = require('path');
 
 const response = require("../utils/response");
 
@@ -14,7 +15,8 @@ router
     let file = req.files.imagenProducto
     data.imagenProducto = file.name;
     let result = await MongoService.create_product(data);
-    file.mv(`C:\\Users\\AORUS GAMING EC\\Desktop\\archivos\\proyecto\\server\\upload\\`+file.name,(error) => {
+    let ub = path.join(__dirname, '../upload')+"\\";
+    file.mv(ub+file.name,(error) => {
         console.log(error);
       }
   );
