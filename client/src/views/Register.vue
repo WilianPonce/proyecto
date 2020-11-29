@@ -1,40 +1,43 @@
 <template>
     <div class="wrapper">
         <div class="login">
-            <p class="title">Login</p>
+            <p class="title">Register</p>
+            <input type="text" placeholder="Nombre" v-model="name" autofocus/>
             <input type="text" placeholder="Correo electrónico" v-model="email" autofocus/>
             <input type="password" placeholder="Contraseña" v-model="password" />
-            <button @click.prevent="login()">
+            <select v-model="rol">
+                <option value="2">Usuario</option>
+                <option value="1">Administrador</option>
+            </select>
+            <button @click.prevent="register()">
             <span class="state">Ingresar</span>
             </button>
         </div>
     </div>
 </template>
 <script>
-import { mapMutations } from "vuex";
 import axios from "axios"
 
 export default {
     data() {
         return {
+            name:null,
             email:null,
-            password:null
+            password:null,
+            rol:2,
         }
     },
     methods: {
-        ...mapMutations(["setUser", "setToken"]),
-        login(){
-            let log = {email:this.email, password:this.password};
-            axios.post("http://localhost:3000/users/login",log).then( ({data}) => {
-                const { user, token } = data;
-                localStorage.setItem("token", token);
-                localStorage.setItem("rol", user.rol);
-                this.setUser(user);
-                this.setToken(token);
-                this.$router.push("/");
-            }).catch(error => {
-                console.log(error);
-            });
+        register(){
+            let log = {name:this.name, email:this.email, password:this.password, rol:this.rol};
+            axios.post("http://localhost:3000/users/register",log).then( ({data}) => {
+                let rol = "Usuario";
+                if(data.body.ops[0].rol == 1){
+                    rol = "Administrador";
+                }
+                alert("Bienvenido "+rol+" "+data.body.ops[0].name);
+                this.$router.push("/login");
+            }).catch(log.error)
         }
     },
 }
@@ -45,7 +48,6 @@ export default {
         top: 0;
         width: 100%;
         height: 100%;
-        z-index: -1;
         display: flex;
         align-items: center;
         flex-direction: column;
@@ -150,5 +152,15 @@ export default {
     footer a, footer a:link {
         color: #fff;
         text-decoration: none;
+    }
+    .login select {
+        display: block;
+        padding: 15px 10px;
+        margin-bottom: 10px;
+        width: 100%;
+        border: 1px solid #ddd;
+        transition: border-width 0.2s ease;
+        border-radius: 2px;
+        color: #ccc;
     }
 </style>

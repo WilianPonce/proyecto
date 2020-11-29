@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="z-index:2">
       <router-link class="navbar-brand" to="/">
       <img src="./assets/logo2.png" width="33px"> CrossLuch
       </router-link>
@@ -20,31 +20,83 @@
           <li class="nav-item">
             <router-link class="nav-link" to="/">Home</router-link>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" v-if="$store.state.user">
             <router-link class="nav-link" to="/cart">Cart</router-link>
           </li>
-          <li class="nav-item">
-            <router-link class="nav-link" to="/admin">Admin</router-link>
-          </li>
+          <template v-if="$store.state.user">
+            <li class="nav-item" v-if="$store.state.user.rol==1">
+              <router-link class="nav-link" to="/admin">Admin</router-link>
+            </li>
+          </template>
         </ul>
       </div>
-      <div>
-        <router-link class="userl" to="/login">Login</router-link>
+      <div v-if="!$store.state.user">
+        <router-link class="userl" to="/login">Login</router-link> | 
+        <router-link class="userl" to="/register">Register</router-link>
       </div>
-      <!--<div>
-        <span class="userl">Bienvenido: Wilian Ponce</span>
-      </div>-->
+      <div v-else>
+        <span class="usern">Bienvenido: {{ $store.state.user.name }} <span class="botones userl" @click="logout()">Cerrar Sesión</span></span>
+      </div>
     </nav>
     <router-view />
   </div>
 </template>
 
+<script>
+  import { mapMutations } from "vuex";
+  import axios from "axios";
+
+  export default {
+    methods: {
+      ...mapMutations(["logoutUser", "setUser", "setToken"]),
+      logout(){
+        localStorage.removeItem('token');
+        this.setUser(null);
+        location.reload();
+      },
+      verificacion(){
+        let token = localStorage.getItem("token");
+        if(!token){
+          localStorage.removeItem('token');
+          return;
+        }else{
+          this.setToken(token);
+        }
+        if(!this.$store.state.user){
+          axios.post("http://localhost:3000/users/auth",{token: token}).then( ({data}) => {
+            const { user } = data;
+            if(!user){
+              localStorage.removeItem('token');
+            }
+            this.setUser(user);
+            localStorage.setItem("rol", user.rol)
+          }).catch(error => {
+            localStorage.removeItem('token');
+            console.log(error);
+          });
+        }
+      }
+    }, 
+    mounted() {
+      this.verificacion();
+    },
+  }
+</script>
+
 <style>
   .userl{
     color: rgba(255, 255, 255, 0.5);
+  }
+  .usern{
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: capitalize;
   }
   .userl:hover{
     color: #fff;
     text-decoration: none;
   }
+  .botones{
+    cursor:pointer;
+  }
+  
 </style>

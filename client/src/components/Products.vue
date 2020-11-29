@@ -24,6 +24,7 @@
                 <button
                   class="btn btn-dark"
                   v-on:click="agregarAlCarrito(product)"
+                  v-if="$store.state.user"
                 >
                   Agregar al carrito
                 </button>
@@ -73,7 +74,9 @@ export default {
   },
   mounted(){
     let prd_recupera = localStorage.getItem("productos");
-    this.productsInCar = JSON.parse(prd_recupera);
+    if(prd_recupera){
+      this.productsInCar = JSON.parse(prd_recupera);
+    }
     this.listarProducto();
   }
 };

@@ -35,8 +35,8 @@
               <input
                 type="email"
                 class="form-control"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
+                id="nombre"
+                aria-describedby="nombre"
                 placeholder="Ingrese el nombre del producto"
                 v-model="nombre"
               />
@@ -48,7 +48,7 @@
               <input
                 type="text"
                 class="form-control"
-                id="exampleInputPassword1"
+                id="descripcion"
                 placeholder="Ingrese la descipcion del producto"
                 v-model="descripcion"
               />
@@ -60,7 +60,7 @@
               <input
                 type="text"
                 class="form-control"
-                id="exampleInputPassword1"
+                id="precio"
                 placeholder="Ingrese el precio del producto"
                 v-model="precio"
               />
@@ -70,7 +70,7 @@
               <input
                 type="file"
                 class="form-control-file"
-                id="exampleFormControlFile1"
+                id="cargarImagen"
                 v-on:change="cargarImagen"
               />
             </div>
