@@ -12,11 +12,21 @@ const create_product = async (data) => {
   let result = await db.collection("products").insertOne(data);
   return result;
 };
+const edit_product = async (data) => {
+  let db = await Mongo();
+  let result = await db.collection("products").updateOne( 
+    {"_id":ObjectId(data.id)},  
+    {$set : data} 
+  );
+  console.log(result);
+  return result;
+};
 const elim_product = async (data) => {
   let db = await Mongo();
   let result = await db.collection("products").deleteOne( {"_id":ObjectId(data)} );
   return result;
 };
+
 //user
 const login = async (data) => {
   let db = await Mongo();
@@ -40,6 +50,7 @@ const getAll = async () => {};
 
 module.exports = {
   create_product,
+  edit_product,
   list_product,
   elim_product,
   login,

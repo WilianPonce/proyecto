@@ -22,7 +22,8 @@
                 <td>{{ prod.precioProducto }}</td>
                 <td> <img :src="url+prod.imagenProducto" class="card-img-top imgtable" alt="..."/> </td>
                 <td>
-                  <div class="btn btn-danger" @click="eliminar(prod._id)">Eliminar</div>
+                  <div class="btn btn-warning mr-2" @click="editar(prod)">Ed</div>
+                  <div class="btn btn-danger" @click="eliminar(prod._id)">El</div>
                 </td>
               </tr>
             </tbody>
@@ -74,7 +75,9 @@
                 v-on:change="cargarImagen"
               />
             </div>
-            <button class="btn btn-primary" v-on:click="enviarProducto">Enviar</button>
+            <button class="btn btn-primary" v-on:click="enviarProducto" v-if="tipo!=2">Enviar</button>
+            <button class="btn btn-primary" v-on:click="editarProducto" v-else>Editar</button>
+            <button class="btn btn-danger ml-2" v-on:click="cancelar()" v-if="tipo==2">Cancelar</button>
           </div>
           <div class="card p-4 mt-5">
             <p>Nombre: {{ nombre }}</p>
@@ -93,11 +96,13 @@ export default {
   data() {
     return {
       url: 'http://localhost:3000/upload/',
+      id:null,
       nombre: null,
       descripcion: null,
       precio:null,
       image: null,
-      lista:[]
+      lista:[],
+      tipo:1,
     };
   },
   methods: {
@@ -125,6 +130,39 @@ export default {
         })
         .catch(console.error);
     },
+    editarProducto(){
+      let formData = new FormData();
+      formData.append("id",this.id);
+      formData.append("nombreProducto",this.nombre);
+      formData.append("descripcionProducto", this.descripcion);
+      formData.append("precioProducto", this.precio);
+      formData.append("imagenProducto", this.image);
+      axios.post("http://localhost:3000/products/edit", formData)
+        .then( () =>{
+          this.listarProducto();
+          this.nombre = null;
+          this.descripcion = null;
+          this.precio = null;
+          this.image = null;
+        })
+        .catch(console.error);
+    },
+    editar(data){
+      this.tipo = 2; 
+      this.id = data._id;
+      this.nombre = data.nombreProducto;
+      this.descripcion = data.descripcionProducto;
+      this.precio =data.precioProducto;
+      this.image = data.imagenProducto;
+    },
+    cancelar(){
+      this.tipo = 1;
+      this.id = null;
+      this.nombre =  null;
+      this.descripcion =  null;
+      this.precio = null;
+      this.image =  null;
+    },
     eliminar(id){
       axios.delete("http://localhost:3000/products/delete/"+id)
         .then( ({data}) =>{
@@ -139,7 +177,6 @@ export default {
   },
 };
 </script>
-
 <style>
   .imgtable{
     width: 45px!important;

@@ -51,13 +51,13 @@
       ...mapMutations(["logoutUser", "setUser", "setToken"]),
       logout(){
         localStorage.removeItem('token');
+        localStorage.removeItem('rol');
         this.setUser(null);
         location.reload();
       },
       verificacion(){
         let token = localStorage.getItem("token");
         if(!token){
-          localStorage.removeItem('token');
           return;
         }else{
           this.setToken(token);
@@ -66,12 +66,12 @@
           axios.post("http://localhost:3000/users/auth",{token: token}).then( ({data}) => {
             const { user } = data;
             if(!user){
-              localStorage.removeItem('token');
+              this.logout();
             }
             this.setUser(user);
             localStorage.setItem("rol", user.rol)
           }).catch(error => {
-            localStorage.removeItem('token');
+            this.logout();
             console.log(error);
           });
         }

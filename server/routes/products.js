@@ -19,8 +19,25 @@ router
     file.mv(ub+file.name,(error) => {
         console.log(error);
       }
-  );
+    );
     response(res, 200, result, "Producto Creado");
+  })
+  .post("/edit", async (req, res) => {
+    let data = req.body;
+    let file = null;
+    if(req.files){
+      file = req.files.imagenProducto
+      data.imagenProducto = file.name;
+    }
+    let result = await MongoService.edit_product(data);
+    if(req.files){
+      let ub = path.join(__dirname, '../upload')+"\\";
+      file.mv(ub+file.name,(error) => {
+          console.log(error);
+        }
+      );
+    }
+    response(res, 200, result, "Producto Editado");
   })
   .put("/update", (req, res) => {})
   .delete("/delete/:id", async (req, res) => {
